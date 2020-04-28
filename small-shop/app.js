@@ -10,7 +10,8 @@ const productRoutes = require('./api/routes/products');
 const orderRoutes = require('./api/routes/orders');
 
 mongoose.connect('mongodb+srv://arafat:' + process.env.PW + '@online-shop-hamg5.mongodb.net/test?retryWrites=true&w=majority' , {
-    useNewUrlParser: true
+    useNewUrlParser: true ,
+    useUnifiedTopology: true
 });
 
 app.use(morgan('dev'));
