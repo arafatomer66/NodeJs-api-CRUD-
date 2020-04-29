@@ -2,13 +2,29 @@ const express = require('express');
 const Product = require('../models/product');
 const router = express();
 const mongoose = require('mongoose');
-
+const mainUrl = 'http://localhost:3000/';
+const route = 'products/';
 
 router.get('/', (req, res, next) => {
     Product.find()
+    .select('name price _id')
     .then(
         (docs) => {
-            res.status(200).json(docs);
+            const response = {
+                count : docs.length ,
+                products : docs.map( doc => {
+                    return {
+                        name : doc.name ,
+                        price : doc.price ,
+                        _id : doc._id ,
+                        request : {
+                            type : 'GET' ,
+                            url :  mainUrl + route +  doc._id
+                        }
+                    }
+                })
+            }
+            res.status(200).json(response);
         }
     )
     .catch(
@@ -29,6 +45,18 @@ router.post('/', (req, res, next) => {
     product.save().then(
         (result) => {
             console.log(result);
+            res.status(201).json({
+                message: 'Product created successfully',
+                createdProduct: {
+                    name : result.name ,
+                        price : result.price ,
+                        _id : result._id ,
+                        request : {
+                            type : 'GET' ,
+                            url :  mainUrl + route +  result._id
+                        }
+                }
+            })
         }
     ).catch(err => {
 
@@ -38,10 +66,6 @@ router.post('/', (req, res, next) => {
         })
     }
     );
-    res.status(201).json({
-        message: 'Handing post request /products',
-        createdProduct: product
-    })
 })
 
 router.get('/:productId', (req, res, next) => {
@@ -91,4 +115,4 @@ router.delete('/:productId', (req, res, next) => {
         })
     })
 })
-module.exports = router; 
+module.exports = router;
